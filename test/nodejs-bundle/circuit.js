@@ -103,7 +103,7 @@ describe(`circuit`, function () {
         nodeTCP1 = node
         cb()
       }),
-      // set up node with TCP and listening on relay1 over TCP transport
+      // set up node with TCP and listening on relay2 over TCP transport
       (cb) => setupNode([
         `/ip4/0.0.0.0/tcp/9311`,
         `/ip4/0.0.0.0/tcp/9111/ipfs/${relayNode2.peerInfo.id.toB58String()}/p2p-circuit`
@@ -133,68 +133,72 @@ describe(`circuit`, function () {
     ], done)
   })
 
-  it('should dial from WS1 to TCP1 over any R', function (done) {
-    nodeWS1.dial(nodeTCP1.peerInfo, '/echo/1.0.0', (err, conn) => {
-      expect(err).to.not.exist()
-      expect(conn).to.exist()
+  describe(`any relay`, function () {
+    it('should dial from WS1 to TCP1 over any R', function (done) {
+      nodeWS1.dial(nodeTCP1.peerInfo, '/echo/1.0.0', (err, conn) => {
+        expect(err).to.not.exist()
+        expect(conn).to.exist()
 
-      pull(
-        pull.values(['hello']),
-        conn,
-        pull.collect((e, result) => {
-          expect(e).to.not.exist()
-          expect(result[0].toString()).to.equal('hello')
-          done()
-        })
-      )
+        pull(
+          pull.values(['hello']),
+          conn,
+          pull.collect((e, result) => {
+            expect(e).to.not.exist()
+            expect(result[0].toString()).to.equal('hello')
+            done()
+          })
+        )
+      })
+    })
+
+    it(`should not dial - no R from WS2 to TCP1`, function (done) {
+      nodeWS2.dial(nodeTCP2.peerInfo, '/echo/1.0.0', (err, conn) => {
+        expect(err).to.exist()
+        expect(conn).to.not.exist()
+        done()
+      })
     })
   })
 
-  it('should dial from WS1 to TCP1 over R1', function (done) {
-    nodeWS1.dial(nodeTCP1.peerInfo, '/echo/1.0.0', (err, conn) => {
-      expect(err).to.not.exist()
-      expect(conn).to.exist()
+  describe(`explicit relay`, function () {
+    it('should dial from WS1 to TCP1 over R1', function (done) {
+      nodeWS1.dial(nodeTCP1.peerInfo, '/echo/1.0.0', (err, conn) => {
+        expect(err).to.not.exist()
+        expect(conn).to.exist()
 
-      pull(
-        pull.values(['hello']),
-        conn,
-        pull.collect((e, result) => {
-          expect(e).to.not.exist()
-          expect(result[0].toString()).to.equal('hello')
+        pull(
+          pull.values(['hello']),
+          conn,
+          pull.collect((e, result) => {
+            expect(e).to.not.exist()
+            expect(result[0].toString()).to.equal('hello')
 
-          const addr = multiaddr(handlerSpies[0].args[2][0].dstPeer.addrs[0]).toString()
-          expect(addr).to.equal(`/ipfs/${nodeTCP1.peerInfo.id.toB58String()}`)
-          done()
-        })
-      )
+            const addr = multiaddr(handlerSpies[0].args[2][0].dstPeer.addrs[0]).toString()
+            expect(addr).to.equal(`/ipfs/${nodeTCP1.peerInfo.id.toB58String()}`)
+            done()
+          })
+        )
+      })
     })
-  })
 
-  it(`should dial from WS1 to TCP2 over R2`, function (done) {
-    nodeWS1.dial(nodeTCP2.peerInfo, '/echo/1.0.0', (err, conn) => {
-      expect(err).to.not.exist()
-      expect(conn).to.exist()
+    it(`should dial from WS1 to TCP2 over R2`, function (done) {
+      nodeWS1.dial(nodeTCP2.peerInfo, '/echo/1.0.0', (err, conn) => {
+        expect(err).to.not.exist()
+        expect(conn).to.exist()
 
-      pull(
-        pull.values(['hello']),
-        conn,
-        pull.collect((e, result) => {
-          expect(e).to.not.exist()
-          expect(result[0].toString()).to.equal('hello')
+        pull(
+          pull.values(['hello']),
+          conn,
+          pull.collect((e, result) => {
+            expect(e).to.not.exist()
+            expect(result[0].toString()).to.equal('hello')
 
-          const addr = multiaddr(handlerSpies[1].args[2][0].dstPeer.addrs[0]).toString()
-          expect(addr).to.equal(`/ipfs/${nodeTCP2.peerInfo.id.toB58String()}`)
-          done()
-        })
-      )
-    })
-  })
-
-  it(`should not dial - no R from WS2 to TCP1`, function (done) {
-    nodeWS2.dial(nodeTCP2.peerInfo, '/echo/1.0.0', (err, conn) => {
-      expect(err).to.exist()
-      expect(conn).to.not.exist()
-      done()
+            const addr = multiaddr(handlerSpies[1].args[2][0].dstPeer.addrs[0]).toString()
+            expect(addr).to.equal(`/ipfs/${nodeTCP2.peerInfo.id.toB58String()}`)
+            done()
+          })
+        )
+      })
     })
   })
 })
