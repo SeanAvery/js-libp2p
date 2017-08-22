@@ -51,6 +51,7 @@ describe(`circuit`, function () {
 
   before((done) => {
     waterfall([
+      // set up passive relay
       (cb) => setupNode([
         `/ip4/0.0.0.0/tcp/9010/ws`,
         `/ip4/0.0.0.0/tcp/9011`
@@ -65,6 +66,7 @@ describe(`circuit`, function () {
         relayNode1 = node
         cb()
       }),
+      // setup active relay
       (cb) => setupNode([
         `/ip4/0.0.0.0/tcp/9110/ws`,
         `/ip4/0.0.0.0/tcp/9111`
@@ -79,18 +81,21 @@ describe(`circuit`, function () {
         relayNode2 = node
         cb()
       }),
+      // setup node with WS
       (cb) => setupNode([
         `/ip4/0.0.0.0/tcp/9210/ws`
       ], (node) => {
         nodeWS1 = node
         cb()
       }),
+      // setup node with WS
       (cb) => setupNode([
         `/ip4/0.0.0.0/tcp/9410/ws`
       ], (node) => {
         nodeWS2 = node
         cb()
       }),
+      // set up node with TCP and listening on relay1
       (cb) => setupNode([
         `/ip4/0.0.0.0/tcp/9211`,
         `/ipfs/${relayNode1.peerInfo.id.toB58String()}/p2p-circuit`
@@ -98,6 +103,7 @@ describe(`circuit`, function () {
         nodeTCP1 = node
         cb()
       }),
+      // set up node with TCP and listening on relay1 over TCP transport
       (cb) => setupNode([
         `/ip4/0.0.0.0/tcp/9311`,
         `/ip4/0.0.0.0/tcp/9111/ipfs/${relayNode2.peerInfo.id.toB58String()}/p2p-circuit`
@@ -111,8 +117,7 @@ describe(`circuit`, function () {
       waterfall([
         (cb) => nodeWS1.dial(relayNode1.peerInfo, cb),
         (conn, cb) => nodeWS1.dial(relayNode2.peerInfo, cb),
-        (conn, cb) => nodeTCP1.dial(relayNode1.peerInfo, cb),
-        (conn, cb) => nodeTCP2.dial(relayNode2.peerInfo, cb)
+        (conn, cb) => nodeTCP1.dial(relayNode1.peerInfo, cb)
       ], done)
     })
   })
