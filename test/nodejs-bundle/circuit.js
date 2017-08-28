@@ -173,7 +173,7 @@ describe(`circuit`, function () {
             expect(e).to.not.exist()
             expect(result[0].toString()).to.equal('hello')
 
-            const addr = multiaddr(handlerSpies[0].args[2][0].dstPeer.addrs[0]).toString()
+            const addr = multiaddr(handlerSpies[0].args[1][0].dstPeer.addrs[0]).toString()
             expect(addr).to.equal(`/ipfs/${nodeTCP1.peerInfo.id.toB58String()}`)
             done()
           })
