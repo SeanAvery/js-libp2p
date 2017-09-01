@@ -57,7 +57,8 @@ describe(`circuit`, function () {
         `/ip4/0.0.0.0/tcp/9011`
       ], {
         relay: {
-          circuit: {
+          enabled: true,
+          hop: {
             enabled: true,
             active: false // passive relay
           }
@@ -72,9 +73,10 @@ describe(`circuit`, function () {
         `/ip4/0.0.0.0/tcp/9111`
       ], {
         relay: {
-          circuit: {
+          enabled: true,
+          hop: {
             enabled: true,
-            active: true // active relay
+            active: false // passive relay
           }
         }
       }, (node) => {
@@ -84,14 +86,22 @@ describe(`circuit`, function () {
       // setup node with WS
       (cb) => setupNode([
         `/ip4/0.0.0.0/tcp/9210/ws`
-      ], (node) => {
+      ], {
+        relay: {
+          enabled: true
+        }
+      }, (node) => {
         nodeWS1 = node
         cb()
       }),
       // setup node with WS
       (cb) => setupNode([
         `/ip4/0.0.0.0/tcp/9410/ws`
-      ], (node) => {
+      ], {
+        relay: {
+          enabled: true
+        }
+      }, (node) => {
         nodeWS2 = node
         cb()
       }),
@@ -99,7 +109,11 @@ describe(`circuit`, function () {
       (cb) => setupNode([
         `/ip4/0.0.0.0/tcp/9211`,
         `/ipfs/${relayNode1.peerInfo.id.toB58String()}/p2p-circuit`
-      ], (node) => {
+      ], {
+        relay: {
+          enabled: true
+        }
+      }, (node) => {
         nodeTCP1 = node
         cb()
       }),
@@ -107,7 +121,11 @@ describe(`circuit`, function () {
       (cb) => setupNode([
         `/ip4/0.0.0.0/tcp/9311`,
         `/ip4/0.0.0.0/tcp/9111/ipfs/${relayNode2.peerInfo.id.toB58String()}/p2p-circuit`
-      ], (node) => {
+      ], {
+        relay: {
+          enabled: true
+        }
+      }, (node) => {
         nodeTCP2 = node
         cb()
       })
@@ -173,7 +191,7 @@ describe(`circuit`, function () {
             expect(e).to.not.exist()
             expect(result[0].toString()).to.equal('hello')
 
-            const addr = multiaddr(handlerSpies[0].args[1][0].dstPeer.addrs[0]).toString()
+            const addr = multiaddr(handlerSpies[0].args[2][0].dstPeer.addrs[0]).toString()
             expect(addr).to.equal(`/ipfs/${nodeTCP1.peerInfo.id.toB58String()}`)
             done()
           })
