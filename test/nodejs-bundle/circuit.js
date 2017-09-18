@@ -60,7 +60,7 @@ describe(`circuit`, function () {
           enabled: true,
           hop: {
             enabled: true,
-            active: false // passive relay
+            active: true // passive relay
           }
         }
       }, (node) => {
@@ -76,7 +76,7 @@ describe(`circuit`, function () {
           enabled: true,
           hop: {
             enabled: true,
-            active: false // passive relay
+            active: true // passive relay
           }
         }
       }, (node) => {
