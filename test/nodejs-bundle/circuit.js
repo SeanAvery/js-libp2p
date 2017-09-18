@@ -3,6 +3,7 @@
 
 const pull = require('pull-stream')
 const waterfall = require('async/waterfall')
+const series = require('async/series')
 const parallel = require('async/parallel')
 const utils = require('./utils')
 const Circuit = require('libp2p-circuit')
@@ -60,7 +61,7 @@ describe(`circuit`, function () {
           enabled: true,
           hop: {
             enabled: true,
-            active: true // passive relay
+            active: false // passive relay
           }
         }
       }, (node) => {
@@ -76,7 +77,7 @@ describe(`circuit`, function () {
           enabled: true,
           hop: {
             enabled: true,
-            active: true // passive relay
+            active: false // passive relay
           }
         }
       }, (node) => {
@@ -132,10 +133,10 @@ describe(`circuit`, function () {
     ], (err) => {
       expect(err).to.not.exist()
 
-      waterfall([
+      series([
         (cb) => nodeWS1.dial(relayNode1.peerInfo, cb),
-        (conn, cb) => nodeWS1.dial(relayNode2.peerInfo, cb),
-        (conn, cb) => nodeTCP1.dial(relayNode1.peerInfo, cb)
+        (cb) => nodeWS1.dial(relayNode2.peerInfo, cb),
+        (cb) => nodeTCP1.dial(relayNode1.peerInfo, cb)
       ], done)
     })
   })
