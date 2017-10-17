@@ -1,6 +1,6 @@
 {
   "name": "libp2p",
-  "version": "0.12.0",
+  "version": "0.12.4",
   "description": "JavaScript base class for libp2p bundles",
   "main": "src/index.js",
   "scripts": {
@@ -39,7 +39,7 @@
   "dependencies": {
     "async": "^2.5.0",
     "libp2p-ping": "^0.6.0",
-    "libp2p-swarm": "^0.32.1",
+    "libp2p-swarm": "^0.32.4",
     "mafmt": "^3.0.1",
     "multiaddr": "^3.0.1",
     "peer-book": "^0.5.1",
@@ -52,7 +52,7 @@
     "cids": "~0.5.1",
     "dirty-chai": "^2.0.1",
     "electron-webrtc": "^0.3.0",
-    "libp2p-kad-dht": "~0.5.0",
+    "libp2p-kad-dht": "~0.5.1",
     "libp2p-mdns": "~0.9.1",
     "libp2p-multiplex": "~0.5.0",
     "libp2p-railing": "~0.7.1",
@@ -73,6 +73,7 @@
   },
   "contributors": [
     "Chris Bratlien <chrisbratlien@gmail.com>",
+    "Daijiro Wachi <daijiro.wachi@gmail.com>",
     "David Dias <daviddias.p@gmail.com>",
     "Elven <mon.samuel@qq.com>",
     "Friedel Ziegelmayer <dignifiedquire@gmail.com>",
