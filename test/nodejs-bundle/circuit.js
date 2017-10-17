@@ -39,12 +39,7 @@ describe(`circuit`, function () {
       node.start((err) => {
         expect(err).to.not.exist()
 
-        handlerSpies.push(sinon.spy(node
-            .swarm
-            .transports[Circuit.tag]
-            .listeners[0]
-            .hopHandler,
-          'handle'))
+        handlerSpies.push(sinon.spy(node.swarm.transports[Circuit.tag].listeners[0].hopHandler, 'handle'))
         cb(node)
       })
     })
